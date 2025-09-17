@@ -25,9 +25,9 @@ public partial class Voucher
 
     public int? UsedCount { get; set; }
 
-    public DateOnly ValidFrom { get; set; }
+    public DateTime ValidFrom { get; set; }
 
-    public DateOnly ValidTo { get; set; }
+    public DateTime ValidTo { get; set; }
 
     public string? Status { get; set; }
 

@@ -420,7 +420,7 @@ public class UserDto
     public string? Email { get; set; }
     public string? Phone { get; set; }
     public string? Address { get; set; }
-    public DateOnly? DateOfBirth { get; set; }
+    public DateTime? DateOfBirth { get; set; }
     public DateTime? CreatedDate { get; set; }
     public DateTime? ModifyDate { get; set; }
     public bool? IsActive { get; set; }
@@ -436,7 +436,7 @@ public class CreateUserDto
     public string? Email { get; set; }
     public string? Phone { get; set; }
     public string? Address { get; set; }
-    public DateOnly? DateOfBirth { get; set; }
+    public DateTime? DateOfBirth { get; set; }
     public int? DefaultRoleId { get; set; }
 }
 
@@ -448,7 +448,7 @@ public class UpdateUserDto
     public string? Email { get; set; }
     public string? Phone { get; set; }
     public string? Address { get; set; }
-    public DateOnly? DateOfBirth { get; set; }
+    public DateTime? DateOfBirth { get; set; }
     public bool? IsActive { get; set; } = true;
     public int? DefaultRoleId { get; set; }
 }
