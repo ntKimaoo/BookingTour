@@ -15,6 +15,9 @@ namespace BookingTour.Controllers
         {
             _context = context;
         }
+        /// <summary>
+        /// Lấy tất cả tour
+        /// </summary>
         [HttpGet("GetAllTours")]
         public IActionResult GetAllTours()
         {

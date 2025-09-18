@@ -26,6 +26,7 @@ public partial class Booking
     public int? VoucherId { get; set; }
 
     public decimal? DiscountAmount { get; set; }
+    
 
     public virtual ICollection<BookingOption> BookingOptions { get; set; } = new List<BookingOption>();
 
