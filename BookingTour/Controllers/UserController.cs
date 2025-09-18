@@ -16,7 +16,12 @@ namespace BookingTour.Controllers
         {
             _context = context;
         }
-
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAll()
+        {
+            var listUser = _context.Users.ToList();
+            return Ok(listUser);
+        }
         // GET: api/User
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers(

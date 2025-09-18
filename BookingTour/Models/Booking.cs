@@ -27,7 +27,7 @@ public partial class Booking
 
     public decimal? DiscountAmount { get; set; }
     
-
+    public DateTime? CreatedDate { get; set; }
     public virtual ICollection<BookingOption> BookingOptions { get; set; } = new List<BookingOption>();
 
     public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();

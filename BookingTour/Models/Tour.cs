@@ -30,7 +30,8 @@ public partial class Tour
     public string? Transport { get; set; }
 
     public string? Thumbnail { get; set; }
-
+    public bool IsActive { get; set; }
+    public bool IsDelete { get; set; }
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
     public virtual ICollection<TourCondition> TourConditions { get; set; } = new List<TourCondition>();

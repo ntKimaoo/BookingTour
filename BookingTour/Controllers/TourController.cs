@@ -24,62 +24,9 @@ namespace BookingTour.Controllers
             var tours = _context.Tours.ToList();
             return Ok(tours);
         }
-        [HttpGet("GetPaginationTour")]
-        public async Task<ActionResult<IEnumerable<Tour>>> GetTours(
-            [FromQuery] int page = 1,
-            [FromQuery] int pageSize = 10,
-            [FromQuery] string? destination = null,
-            [FromQuery] string? status = null,
-            [FromQuery] decimal? minPrice = null,
-            [FromQuery] decimal? maxPrice = null)
-        {
-            try
-            {
-                var query = _context.Tours
-                    .Include(t => t.TourImages)
-                    .Include(t => t.TourConditions)
-                    .AsQueryable();
-
-                // Apply filters
-                if (!string.IsNullOrEmpty(destination))
-                    query = query.Where(t => t.Destination.Contains(destination));
-
-                if (!string.IsNullOrEmpty(status))
-                    query = query.Where(t => t.Status == status);
-
-                if (minPrice.HasValue)
-                    query = query.Where(t => t.Price >= minPrice.Value);
-
-                if (maxPrice.HasValue)
-                    query = query.Where(t => t.Price <= maxPrice.Value);
-
-                // Pagination
-                var totalCount = await query.CountAsync();
-                var tours = await query
-                    .Skip((page - 1) * pageSize)
-                    .Take(pageSize)
-                    .OrderByDescending(t => t.CreatedDate)
-                    .ToListAsync();
-
-                var response = new
-                {
-                    Data = tours,
-                    TotalCount = totalCount,
-                    Page = page,
-                    PageSize = pageSize,
-                    TotalPages = (int)Math.Ceiling((double)totalCount / pageSize)
-                };
-
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { Message = "Đã xảy ra lỗi khi lấy danh sách tour", Error = ex.Message });
-            }
-        }
 
         // GET: api/tour/{id}
-        [HttpGet("Tour{id}")]
+        [HttpGet("{id}")]
         public async Task<ActionResult<Tour>> GetTour(int id)
         {
             try
@@ -180,7 +127,7 @@ namespace BookingTour.Controllers
         }
 
         // PUT: api/tour/{id}
-        [HttpPut("Edit:{id}")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateTour(int id, [FromBody] UpdateTourRequest request)
         {
             try
@@ -385,7 +332,7 @@ namespace BookingTour.Controllers
         public int? Duration { get; set; }
         public decimal? Price { get; set; }
         public int? MaxParticipants { get; set; }
-        public DateTime? StartDate { get; set; }    
+        public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public string? Status { get; set; }
         public string? Transport { get; set; }

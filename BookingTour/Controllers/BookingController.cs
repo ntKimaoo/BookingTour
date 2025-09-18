@@ -312,27 +312,7 @@ namespace BookingTour.Controllers
             return Ok(payments);
         }
 
-        // GET: api/booking/statistics
-        [HttpGet("statistics")]
-        public async Task<ActionResult<BookingStatisticsDto>> GetBookingStatistics()
-        {
-            var totalBookings = await _context.Bookings.CountAsync();
-            var pendingBookings = await _context.Bookings.CountAsync(b => b.Status == "Pending");
-            var confirmedBookings = await _context.Bookings.CountAsync(b => b.Status == "Confirmed");
-            var completedBookings = await _context.Bookings.CountAsync(b => b.Status == "Completed");
-            var cancelledBookings = await _context.Bookings.CountAsync(b => b.Status == "Cancelled");
-            var totalRevenue = await _context.Bookings.SumAsync(b => b.TotalAmount);
-
-            return Ok(new BookingStatisticsDto
-            {
-                TotalBookings = totalBookings,
-                PendingBookings = pendingBookings,
-                ConfirmedBookings = confirmedBookings,
-                CompletedBookings = completedBookings,
-                CancelledBookings = cancelledBookings,
-                TotalRevenue = totalRevenue
-            });
-        }
+        
 
         private bool BookingExists(int id)
         {
@@ -466,13 +446,4 @@ namespace BookingTour.Controllers
         public string PaymentStatus { get; set; } = null!;
     }
 
-    public class BookingStatisticsDto
-    {
-        public int TotalBookings { get; set; }
-        public int PendingBookings { get; set; }
-        public int ConfirmedBookings { get; set; }
-        public int CompletedBookings { get; set; }
-        public int CancelledBookings { get; set; }
-        public decimal TotalRevenue { get; set; }
-    }
 }
