@@ -15,6 +15,14 @@ builder.Services.AddSwaggerGen(c =>
     c.IncludeXmlComments(xmlPath);
     c.DescribeAllParametersInCamelCase();
 });
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFE",
+        policy => policy
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
 builder.Services.AddDbContext<TourBookingSystemContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MyCnn")));
 var app = builder.Build();
@@ -23,15 +31,16 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Api V1");
-        //options.RoutePrefix = string.Empty;
-    });
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Api V1");
+    options.RoutePrefix = string.Empty;
+});
 
 }
 
 app.UseHttpsRedirection();
+app.UseCors("AllowFE");
 
 app.UseAuthorization();
 
