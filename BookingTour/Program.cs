@@ -28,18 +28,18 @@ builder.Services.AddDbContext<TourBookingSystemContext>(options =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
     options.SwaggerEndpoint("/swagger/v1/swagger.json", "Api V1");
-    //options.RoutePrefix = string.Empty;
+    options.RoutePrefix = string.Empty;
 });
 
-}
+//}
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseCors("AllowFE");
 
 app.UseAuthorization();
