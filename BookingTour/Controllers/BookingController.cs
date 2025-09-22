@@ -16,44 +16,19 @@ namespace BookingTour.Controllers
         }
 
         // GET: api/booking
-            [HttpGet("GetPaginationBooking")]
-        public async Task<ActionResult<IEnumerable<BookingDto>>> GetBookings(
-            [FromQuery] int? userId = null,
-            [FromQuery] string? status = null,
-            [FromQuery] int page = 1,
-            [FromQuery] int pageSize = 10)
+        [HttpGet("GetAllBooking")]
+        public async Task<ActionResult<IEnumerable<BookingDto>>> GetAllBookings()
         {
-            var query = _context.Bookings
+            var bookings = await _context.Bookings
                 .Include(b => b.Tour)
                 .Include(b => b.User)
                 .Include(b => b.Voucher)
                 .Include(b => b.BookingOptions)
                     .ThenInclude(bo => bo.Option)
                 .Include(b => b.Payments)
-                .AsQueryable();
-
-            if (userId.HasValue)
-            {
-                query = query.Where(b => b.UserId == userId.Value);
-            }
-
-            if (!string.IsNullOrEmpty(status))
-            {
-                query = query.Where(b => b.Status == status);
-            }
-
-            var totalCount = await query.CountAsync();
-            var bookings = await query
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .Select(b => MapToDto(b))
+                .OrderBy(e => e.CreatedDate)
                 .ToListAsync();
-
-            Response.Headers.Add("X-Total-Count", totalCount.ToString());
-            Response.Headers.Add("X-Page", page.ToString());
-            Response.Headers.Add("X-Page-Size", pageSize.ToString());
-
-            return Ok(bookings);
+            return Ok(bookings.Select(b => MapToDto(b)));
         }
 
         // GET: api/booking/{id}
@@ -109,12 +84,17 @@ namespace BookingTour.Controllers
                     return BadRequest("Invalid Voucher ID.");
                 }
             }
+            if (createBookingDto.BookingDate < DateTime.Now)
+            {
 
+                return BadRequest("Invalid Date Booking");
+
+            }
             var booking = new Booking
             {
                 UserId = createBookingDto.UserId,
                 TourId = createBookingDto.TourId,
-                BookingDate = DateTime.UtcNow,
+                BookingDate = createBookingDto.BookingDate,
                 NumberOfPeople = createBookingDto.NumberOfPeople,
                 TotalAmount = createBookingDto.TotalAmount,
                 Status = createBookingDto.Status ?? "Pending",
@@ -312,7 +292,7 @@ namespace BookingTour.Controllers
             return Ok(payments);
         }
 
-        
+
 
         private bool BookingExists(int id)
         {
@@ -387,6 +367,7 @@ namespace BookingTour.Controllers
         public int UserId { get; set; }
         public int TourId { get; set; }
         public int NumberOfPeople { get; set; }
+        public DateTime BookingDate { get; set; }
         public decimal TotalAmount { get; set; }
         public string? Status { get; set; }
         public string? Notes { get; set; }

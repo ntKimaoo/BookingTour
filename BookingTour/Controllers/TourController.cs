@@ -236,23 +236,22 @@ namespace BookingTour.Controllers
 
         // GET: api/tour/search
         [HttpGet("search")]
-        public async Task<ActionResult<IEnumerable<Tour>>> SearchTours([FromQuery] string keyword)
+        public async Task<ActionResult<IEnumerable<Tour>>> SearchTours([FromQuery] string? keyword)
         {
             try
             {
-                if (string.IsNullOrEmpty(keyword))
+                IQueryable<Tour> query = _context.Tours
+                    .Include(t => t.TourImages)
+                    .Include(t => t.TourConditions);
+
+                if (!string.IsNullOrEmpty(keyword))
                 {
-                    return BadRequest(new { Message = "Từ khóa tìm kiếm không được để trống" });
+                    query = query.Where(t => t.TourName.Contains(keyword) ||
+                                             t.Destination.Contains(keyword))
+                        .OrderByDescending(t => t.CreatedDate);
                 }
 
-                var tours = await _context.Tours
-                    .Include(t => t.TourImages)
-                    .Include(t => t.TourConditions)
-                    .Where(t => t.TourName.Contains(keyword) ||
-                               t.Destination.Contains(keyword) ||
-                               (t.Description != null && t.Description.Contains(keyword)))
-                    .OrderByDescending(t => t.CreatedDate)
-                    .ToListAsync();
+                var tours = await query.ToListAsync();
 
                 return Ok(tours);
             }
@@ -261,6 +260,7 @@ namespace BookingTour.Controllers
                 return StatusCode(500, new { Message = "Đã xảy ra lỗi khi tìm kiếm tour", Error = ex.Message });
             }
         }
+
 
         // GET: api/tour/available
         [HttpGet("available")]

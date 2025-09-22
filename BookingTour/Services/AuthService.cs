@@ -85,6 +85,7 @@ namespace BookingTour.Services
                 {
                     Username = request.Username,
                     Email = request.Email,
+                    FullName = request.FullName,
                     PasswordHash = HashPassword(request.Password),
                     DefaultRoleId = _context.Roles.FirstOrDefault(c=>c.RoleName.Equals("Customer")).RoleId,
                     CreatedDate = DateTime.UtcNow,
@@ -220,7 +221,9 @@ namespace BookingTour.Services
         {
             try
             {
-                return await _context.Users.FindAsync(userId);
+                return await _context.Users
+                    .Include(u => u.DefaultRole)
+                    .FirstOrDefaultAsync(u => u.UserId == userId);
             }
             catch (Exception ex)
             {

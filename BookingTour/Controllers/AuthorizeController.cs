@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using Azure;
 using BookingTour.Models;
 using BookingTour.Services.DTOs;
 
@@ -113,6 +112,7 @@ namespace BookingTour.Controllers
             {
                 Id = user.UserId,
                 Username = user.Username,
+                Fullname=user.FullName,
                 Email = user.Email,
                 Role = user.DefaultRole.RoleName
             };
