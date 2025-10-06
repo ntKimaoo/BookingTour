@@ -34,7 +34,7 @@ namespace BookingTour.Controllers
                 var tour = await _context.Tours
                     .Include(t => t.TourImages)
                     .Include(t => t.TourConditions)
-                    .Include(t => t.Bookings)
+                    .Include(t => t.TourSchedules)
                     .FirstOrDefaultAsync(t => t.TourId == id);
 
                 if (tour == null)
@@ -69,8 +69,6 @@ namespace BookingTour.Controllers
                     Duration = request.Duration,
                     Price = request.Price,
                     MaxParticipants = request.MaxParticipants,
-                    StartDate = request.StartDate,
-                    EndDate = request.EndDate,
                     Status = request.Status ?? "Active",
                     CreatedDate = DateTime.Now,
                     Transport = request.Transport,
@@ -109,6 +107,20 @@ namespace BookingTour.Controllers
                         });
                     }
                 }
+                if (request.TourSchedules != null && request.TourSchedules.Any())
+                {
+                    foreach (var schedule in request.TourSchedules)
+                    {
+                        _context.TourSchedules.Add(new TourSchedule
+                        {
+                            TourId = tour.TourId,
+                            StartDate = schedule.StartDate,
+                            EndDate = schedule.EndDate,
+                            AvailableSlots = schedule.AvailableSlots,
+                            Note = schedule.Note,
+                        });
+                    }
+                }
 
                 await _context.SaveChangesAsync();
 
@@ -116,6 +128,7 @@ namespace BookingTour.Controllers
                 var createdTour = await _context.Tours
                     .Include(t => t.TourImages)
                     .Include(t => t.TourConditions)
+                    .Include(t => t.TourSchedules)
                     .FirstOrDefaultAsync(t => t.TourId == tour.TourId);
 
                 return CreatedAtAction(nameof(GetTour), new { id = tour.TourId }, createdTour);
@@ -154,8 +167,6 @@ namespace BookingTour.Controllers
                 tour.Duration = request.Duration ?? tour.Duration;
                 tour.Price = request.Price ?? tour.Price;
                 tour.MaxParticipants = request.MaxParticipants ?? tour.MaxParticipants;
-                tour.StartDate = request.StartDate ?? tour.StartDate;
-                tour.EndDate = request.EndDate ?? tour.EndDate;
                 tour.Status = request.Status ?? tour.Status;
                 tour.Transport = request.Transport ?? tour.Transport;
                 tour.Thumbnail = request.Thumbnail ?? tour.Thumbnail;
@@ -191,7 +202,21 @@ namespace BookingTour.Controllers
                         });
                     }
                 }
-
+                if (request.TourSchedules != null)
+                {
+                    _context.TourSchedules.RemoveRange(tour.TourSchedules);
+                    foreach (var schedule in request.TourSchedules)
+                    {
+                        _context.TourSchedules.Add(new TourSchedule
+                        {
+                            TourId = tour.TourId,
+                            StartDate = schedule.StartDate,
+                            EndDate = schedule.EndDate,
+                            AvailableSlots = schedule.AvailableSlots,
+                            Note = schedule.Note,
+                        });
+                    }
+                }
                 await _context.SaveChangesAsync();
 
                 return Ok(new { Message = "Cập nhật tour thành công" });
@@ -210,6 +235,7 @@ namespace BookingTour.Controllers
             {
                 var tour = await _context.Tours
                     .Include(t => t.Bookings)
+                    .Include(t => t.TourSchedules)
                     .FirstOrDefaultAsync(t => t.TourId == id);
 
                 if (tour == null)
@@ -273,9 +299,10 @@ namespace BookingTour.Controllers
                 var tours = await _context.Tours
                     .Include(t => t.TourImages)
                     .Include(t => t.TourConditions)
+                    .Include(t => t.TourSchedules)
                     .Where(t => t.Status == "Active" &&
-                               t.StartDate >= searchDate)
-                    .OrderBy(t => t.StartDate)
+                               t.TourSchedules.Any(ts => ts.StartDate >= searchDate))
+                    .OrderBy(t => t.TourSchedules.Min(ts => ts.StartDate))
                     .ToListAsync();
 
                 return Ok(tours);
@@ -310,18 +337,13 @@ namespace BookingTour.Controllers
         [Range(1, int.MaxValue, ErrorMessage = "Số lượng tham gia tối đa phải lớn hơn 0")]
         public int MaxParticipants { get; set; }
 
-        [Required(ErrorMessage = "Ngày bắt đầu là bắt buộc")]
-        public DateTime StartDate { get; set; }
-
-        [Required(ErrorMessage = "Ngày kết thúc là bắt buộc")]
-        public DateTime EndDate { get; set; }
-
         public string? Status { get; set; }
         public string? Transport { get; set; }
         public string? Thumbnail { get; set; }
 
         public List<CreateTourConditionRequest>? TourConditions { get; set; }
         public List<CreateTourImageRequest>? TourImages { get; set; }
+        public List<CreateTourScheduleRequest>? TourSchedules { get; set; }
     }
 
     public class UpdateTourRequest
@@ -332,14 +354,13 @@ namespace BookingTour.Controllers
         public int? Duration { get; set; }
         public decimal? Price { get; set; }
         public int? MaxParticipants { get; set; }
-        public DateTime? StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
         public string? Status { get; set; }
         public string? Transport { get; set; }
         public string? Thumbnail { get; set; }
-
         public List<CreateTourConditionRequest>? TourConditions { get; set; }
         public List<CreateTourImageRequest>? TourImages { get; set; }
+        public List<CreateTourScheduleRequest>? TourSchedules { get; set; }
+
     }
 
     public class CreateTourConditionRequest
@@ -357,5 +378,13 @@ namespace BookingTour.Controllers
         public string ImageUrl { get; set; } = null!;
 
         public string? Caption { get; set; }
+    }
+    public class CreateTourScheduleRequest
+    {
+        public DateTime StartDate { get; set; }
+
+        public DateTime EndDate { get; set; }
+        public int AvailableSlots { get; set; }
+        public string? Note { get; set; }
     }
 }

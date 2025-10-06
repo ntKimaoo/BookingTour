@@ -28,7 +28,7 @@ public partial class TourBookingSystemContext : DbContext
     public virtual DbSet<TourCondition> TourConditions { get; set; }
 
     public virtual DbSet<TourImage> TourImages { get; set; }
-
+    public virtual DbSet<TourSchedule> TourSchedules { get; set; }
     public virtual DbSet<TourOption> TourOptions { get; set; }
 
     public virtual DbSet<TourOptionAvailable> TourOptionAvailables { get; set; }
@@ -317,6 +317,7 @@ public partial class TourBookingSystemContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.VoucherName).HasMaxLength(100);
         });
+        modelBuilder.Entity<TourSchedule>().ToTable("TourSchedule");
 
         OnModelCreatingPartial(modelBuilder);
     }

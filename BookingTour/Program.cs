@@ -54,7 +54,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFE",
         policy => policy
-            .WithOrigins("http://localhost:5173", "https://vivutour.vercel.app/")
+            .WithOrigins("http://localhost:5173", "https://vivutour.vercel.app")
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials()); 
@@ -115,13 +115,12 @@ var app = builder.Build();
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "Api V1");
-        options.RoutePrefix = string.Empty;
         options.ConfigObject.AdditionalItems["withCredentials"] = true;
     });
 
 //}
 app.UseDeveloperExceptionPage();
-//app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 app.UseCors("AllowFE");
 
 app.UseAuthentication();
