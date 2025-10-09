@@ -101,7 +101,10 @@ namespace BookingTour.Controllers
                 PaymentStatus = "Pending",
                 Notes = createBookingDto.Notes,
                 VoucherId = createBookingDto.VoucherId,
-                DiscountAmount = createBookingDto.DiscountAmount
+                DiscountAmount = createBookingDto.DiscountAmount,
+                FullName = createBookingDto.FullName,
+                Email = createBookingDto.Email,
+                PhoneNumber = createBookingDto.PhoneNumber
             };
 
             _context.Bookings.Add(booking);
@@ -306,6 +309,9 @@ namespace BookingTour.Controllers
                 BookingId = booking.BookingId,
                 UserId = booking.UserId,
                 UserName = booking.User?.FullName,
+                FullName = booking.FullName,
+                Email = booking.Email,
+                PhoneNumber = booking.PhoneNumber,
                 TourId = booking.TourId,
                 TourName = booking.Tour?.TourName,
                 BookingDate = booking.BookingDate,
@@ -358,6 +364,9 @@ namespace BookingTour.Controllers
         public int? VoucherId { get; set; }
         public string? VoucherCode { get; set; }
         public decimal? DiscountAmount { get; set; }
+        public string FullName { get; set; }
+        public string? Email { get; set; }
+        public string PhoneNumber { get; set; }
         public List<BookingOptionDto>? BookingOptions { get; set; }
         public List<PaymentDto>? Payments { get; set; }
     }
@@ -373,6 +382,9 @@ namespace BookingTour.Controllers
         public string? Notes { get; set; }
         public int? VoucherId { get; set; }
         public decimal? DiscountAmount { get; set; }
+        public string FullName { get; set; }
+        public string? Email { get; set; }
+        public string PhoneNumber { get; set; }
         public List<CreateBookingOptionDto>? BookingOptions { get; set; }
     }
 
