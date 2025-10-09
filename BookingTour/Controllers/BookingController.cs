@@ -84,17 +84,18 @@ namespace BookingTour.Controllers
                     return BadRequest("Invalid Voucher ID.");
                 }
             }
-            if (createBookingDto.BookingDate < DateTime.Now)
+            var scheduleFind = await _context.TourSchedules
+                .FirstOrDefaultAsync(t => t.ScheduleId == createBookingDto.ScheduleId);
+            
+            if (scheduleFind != null)
             {
-
-                return BadRequest("Invalid Date Booking");
-
+                scheduleFind.AvailableSlots -= createBookingDto.NumberOfPeople;
             }
             var booking = new Booking
             {
                 UserId = createBookingDto.UserId,
                 TourId = createBookingDto.TourId,
-                BookingDate = createBookingDto.BookingDate,
+                BookingDate = scheduleFind.StartDate,
                 NumberOfPeople = createBookingDto.NumberOfPeople,
                 TotalAmount = createBookingDto.TotalAmount,
                 Status = createBookingDto.Status ?? "Pending",
@@ -104,9 +105,9 @@ namespace BookingTour.Controllers
                 DiscountAmount = createBookingDto.DiscountAmount,
                 FullName = createBookingDto.FullName,
                 Email = createBookingDto.Email,
-                PhoneNumber = createBookingDto.PhoneNumber
+                PhoneNumber = createBookingDto.PhoneNumber,
+                CreatedDate = DateTime.UtcNow
             };
-
             _context.Bookings.Add(booking);
             await _context.SaveChangesAsync();
 
@@ -376,7 +377,7 @@ namespace BookingTour.Controllers
         public int UserId { get; set; }
         public int TourId { get; set; }
         public int NumberOfPeople { get; set; }
-        public DateTime BookingDate { get; set; }
+        public int ScheduleId { get; set; }
         public decimal TotalAmount { get; set; }
         public string? Status { get; set; }
         public string? Notes { get; set; }
