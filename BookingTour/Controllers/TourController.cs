@@ -69,7 +69,7 @@ namespace BookingTour.Controllers
                     Duration = request.Duration,
                     Price = request.Price,
                     MaxParticipants = request.MaxParticipants,
-                    Status = request.Status ?? "Active",
+                    IsActive = true,
                     CreatedDate = DateTime.Now,
                     Transport = request.Transport,
                     Thumbnail = request.Thumbnail
@@ -168,7 +168,7 @@ namespace BookingTour.Controllers
                 tour.Duration = request.Duration ?? tour.Duration;
                 tour.Price = request.Price ?? tour.Price;
                 tour.MaxParticipants = request.MaxParticipants ?? tour.MaxParticipants;
-                tour.Status = request.Status ?? tour.Status;
+                tour.IsActive = request.IsActive ?? tour.IsActive;
                 tour.Transport = request.Transport ?? tour.Transport;
                 tour.Thumbnail = request.Thumbnail ?? tour.Thumbnail;
 
@@ -325,7 +325,7 @@ namespace BookingTour.Controllers
                     .Include(t => t.TourImages)
                     .Include(t => t.TourConditions)
                     .Include(t => t.TourSchedules)
-                    .Where(t => t.Status == "Active" &&
+                    .Where(t => t.IsActive == true &&
                                t.TourSchedules.Any(ts => ts.StartDate >= searchDate))
                     .OrderBy(t => t.TourSchedules.Min(ts => ts.StartDate))
                     .ToListAsync();
@@ -394,7 +394,7 @@ namespace BookingTour.Controllers
             public int? Duration { get; set; }
             public decimal? Price { get; set; }
             public int? MaxParticipants { get; set; }
-            public string? Status { get; set; }
+            public bool? IsActive { get; set; }
             public string? Transport { get; set; }
             public string? Thumbnail { get; set; }
             public List<CreateTourConditionRequest>? TourConditions { get; set; }

@@ -19,8 +19,6 @@ public partial class Tour
 
     public int MaxParticipants { get; set; }
 
-    public string? Status { get; set; }
-
     public DateTime? CreatedDate { get; set; }
 
     public string? Transport { get; set; }
