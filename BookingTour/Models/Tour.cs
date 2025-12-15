@@ -19,12 +19,6 @@ public partial class Tour
 
     public int MaxParticipants { get; set; }
 
-    public DateTime StartDate { get; set; }
-
-    public DateTime EndDate { get; set; }
-
-    public string? Status { get; set; }
-
     public DateTime? CreatedDate { get; set; }
 
     public string? Transport { get; set; }
@@ -39,4 +33,5 @@ public partial class Tour
     public virtual ICollection<TourImage> TourImages { get; set; } = new List<TourImage>();
 
     public virtual ICollection<TourOptionAvailable> TourOptionAvailables { get; set; } = new List<TourOptionAvailable>();
+    public virtual ICollection<TourSchedule> TourSchedules { get; set; } = new List<TourSchedule>();
 }

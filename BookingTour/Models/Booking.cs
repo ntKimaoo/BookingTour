@@ -20,6 +20,9 @@ public partial class Booking
     public string? Status { get; set; }
 
     public string? PaymentStatus { get; set; }
+    public string FullName { get; set; }
+    public string? Email { get; set; }
+    public string PhoneNumber { get; set; }
 
     public string? Notes { get; set; }
 

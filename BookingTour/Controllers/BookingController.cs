@@ -16,44 +16,19 @@ namespace BookingTour.Controllers
         }
 
         // GET: api/booking
-            [HttpGet("GetPaginationBooking")]
-        public async Task<ActionResult<IEnumerable<BookingDto>>> GetBookings(
-            [FromQuery] int? userId = null,
-            [FromQuery] string? status = null,
-            [FromQuery] int page = 1,
-            [FromQuery] int pageSize = 10)
+        [HttpGet("GetAllBooking")]
+        public async Task<ActionResult<IEnumerable<BookingDto>>> GetAllBookings()
         {
-            var query = _context.Bookings
+            var bookings = await _context.Bookings
                 .Include(b => b.Tour)
                 .Include(b => b.User)
                 .Include(b => b.Voucher)
                 .Include(b => b.BookingOptions)
                     .ThenInclude(bo => bo.Option)
                 .Include(b => b.Payments)
-                .AsQueryable();
-
-            if (userId.HasValue)
-            {
-                query = query.Where(b => b.UserId == userId.Value);
-            }
-
-            if (!string.IsNullOrEmpty(status))
-            {
-                query = query.Where(b => b.Status == status);
-            }
-
-            var totalCount = await query.CountAsync();
-            var bookings = await query
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .Select(b => MapToDto(b))
+                .OrderBy(e => e.CreatedDate)
                 .ToListAsync();
-
-            Response.Headers.Add("X-Total-Count", totalCount.ToString());
-            Response.Headers.Add("X-Page", page.ToString());
-            Response.Headers.Add("X-Page-Size", pageSize.ToString());
-
-            return Ok(bookings);
+            return Ok(bookings.Select(b => MapToDto(b)));
         }
 
         // GET: api/booking/{id}
@@ -109,21 +84,30 @@ namespace BookingTour.Controllers
                     return BadRequest("Invalid Voucher ID.");
                 }
             }
-
+            var scheduleFind = await _context.TourSchedules
+                .FirstOrDefaultAsync(t => t.ScheduleId == createBookingDto.ScheduleId);
+            
+            if (scheduleFind != null)
+            {
+                scheduleFind.AvailableSlots -= createBookingDto.NumberOfPeople;
+            }
             var booking = new Booking
             {
                 UserId = createBookingDto.UserId,
                 TourId = createBookingDto.TourId,
-                BookingDate = DateTime.UtcNow,
+                BookingDate = scheduleFind.StartDate,
                 NumberOfPeople = createBookingDto.NumberOfPeople,
                 TotalAmount = createBookingDto.TotalAmount,
                 Status = createBookingDto.Status ?? "Pending",
                 PaymentStatus = "Pending",
                 Notes = createBookingDto.Notes,
                 VoucherId = createBookingDto.VoucherId,
-                DiscountAmount = createBookingDto.DiscountAmount
+                DiscountAmount = createBookingDto.DiscountAmount,
+                FullName = createBookingDto.FullName,
+                Email = createBookingDto.Email,
+                PhoneNumber = createBookingDto.PhoneNumber,
+                CreatedDate = DateTime.UtcNow
             };
-
             _context.Bookings.Add(booking);
             await _context.SaveChangesAsync();
 
@@ -312,7 +296,7 @@ namespace BookingTour.Controllers
             return Ok(payments);
         }
 
-        
+
 
         private bool BookingExists(int id)
         {
@@ -326,6 +310,9 @@ namespace BookingTour.Controllers
                 BookingId = booking.BookingId,
                 UserId = booking.UserId,
                 UserName = booking.User?.FullName,
+                FullName = booking.FullName,
+                Email = booking.Email,
+                PhoneNumber = booking.PhoneNumber,
                 TourId = booking.TourId,
                 TourName = booking.Tour?.TourName,
                 BookingDate = booking.BookingDate,
@@ -378,6 +365,9 @@ namespace BookingTour.Controllers
         public int? VoucherId { get; set; }
         public string? VoucherCode { get; set; }
         public decimal? DiscountAmount { get; set; }
+        public string FullName { get; set; }
+        public string? Email { get; set; }
+        public string PhoneNumber { get; set; }
         public List<BookingOptionDto>? BookingOptions { get; set; }
         public List<PaymentDto>? Payments { get; set; }
     }
@@ -387,11 +377,15 @@ namespace BookingTour.Controllers
         public int UserId { get; set; }
         public int TourId { get; set; }
         public int NumberOfPeople { get; set; }
+        public int ScheduleId { get; set; }
         public decimal TotalAmount { get; set; }
         public string? Status { get; set; }
         public string? Notes { get; set; }
         public int? VoucherId { get; set; }
         public decimal? DiscountAmount { get; set; }
+        public string FullName { get; set; }
+        public string? Email { get; set; }
+        public string PhoneNumber { get; set; }
         public List<CreateBookingOptionDto>? BookingOptions { get; set; }
     }
 

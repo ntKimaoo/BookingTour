@@ -361,3 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/BookingTour/Program.cs
+/BookingTour/BookingTour.csproj
+/.gitignore
+/BookingTour/BookingTour.csproj

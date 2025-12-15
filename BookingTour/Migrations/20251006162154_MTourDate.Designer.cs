@@ -4,6 +4,7 @@ using BookingTour.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookingTour.Migrations
 {
     [DbContext(typeof(TourBookingSystemContext))]
-    partial class TourBookingSystemContextModelSnapshot : ModelSnapshot
+    [Migration("20251006162154_MTourDate")]
+    partial class MTourDate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,13 +47,6 @@ namespace BookingTour.Migrations
                         .HasColumnType("decimal(10, 2)")
                         .HasDefaultValue(0m);
 
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FullName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
@@ -62,10 +58,6 @@ namespace BookingTour.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)")
                         .HasDefaultValue("Unpaid");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")
                         .ValueGeneratedOnAdd()
@@ -249,9 +241,7 @@ namespace BookingTour.Migrations
                         .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
@@ -261,6 +251,10 @@ namespace BookingTour.Migrations
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(10, 2)");
+
+                    b.Property<string>("Status")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("Thumbnail")
                         .HasMaxLength(255)
@@ -450,7 +444,7 @@ namespace BookingTour.Migrations
 
                     b.HasIndex("TourId");
 
-                    b.ToTable("TourSchedule", (string)null);
+                    b.ToTable("TourSchedule");
                 });
 
             modelBuilder.Entity("BookingTour.Models.User", b =>

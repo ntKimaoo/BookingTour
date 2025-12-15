@@ -19,7 +19,10 @@ namespace BookingTour.Controllers
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
-            var listUser = _context.Users.ToList();
+            var listUser = _context.Users
+                .Include(u => u.DefaultRole)
+                .Include(u => u.Bookings)
+                .OrderByDescending(e=>e.CreatedDate).ToList();
             return Ok(listUser);
         }
         // GET: api/User
@@ -202,18 +205,6 @@ namespace BookingTour.Controllers
                     return NotFound(new { Message = "User not found" });
                 }
 
-                // Check if username is being changed and if it already exists
-                if (updateUserDto.Username != user.Username)
-                {
-                    var existingUser = await _context.Users
-                        .FirstOrDefaultAsync(u => u.Username == updateUserDto.Username && u.UserId != id);
-
-                    if (existingUser != null)
-                    {
-                        return BadRequest(new { Message = "Username already exists" });
-                    }
-                }
-
                 // Check if email is being changed and if it already exists
                 if (!string.IsNullOrEmpty(updateUserDto.Email) && updateUserDto.Email != user.Email)
                 {
@@ -227,22 +218,12 @@ namespace BookingTour.Controllers
                 }
 
                 // Update user properties
-                user.Username = updateUserDto.Username;
                 user.FullName = updateUserDto.FullName;
                 user.Email = updateUserDto.Email;
                 user.Phone = updateUserDto.Phone;
-                user.Address = updateUserDto.Address;
-                user.DateOfBirth = updateUserDto.DateOfBirth;
                 user.ModifyDate = DateTime.Now;
                 user.IsActive = updateUserDto.IsActive;
-                user.DefaultRoleId = updateUserDto.DefaultRoleId;
-
-                // Update password if provided
-                if (!string.IsNullOrEmpty(updateUserDto.Password))
-                {
-                    user.PasswordHash = HashPassword(updateUserDto.Password);
-                }
-
+                //user.DefaultRoleId = updateUserDto.DefaultRoleId;
                 await _context.SaveChangesAsync();
 
                 return Ok(new { Message = "User updated successfully" });
@@ -447,14 +428,9 @@ public class CreateUserDto
 
 public class UpdateUserDto
 {
-    public string Username { get; set; } = null!;
-    public string? Password { get; set; } // Optional for updates
     public string? FullName { get; set; }
     public string? Email { get; set; }
     public string? Phone { get; set; }
-    public string? Address { get; set; }
-    public DateTime? DateOfBirth { get; set; }
     public bool? IsActive { get; set; } = true;
-    public int? DefaultRoleId { get; set; }
 }
     

@@ -28,7 +28,7 @@ public partial class TourBookingSystemContext : DbContext
     public virtual DbSet<TourCondition> TourConditions { get; set; }
 
     public virtual DbSet<TourImage> TourImages { get; set; }
-
+    public virtual DbSet<TourSchedule> TourSchedules { get; set; }
     public virtual DbSet<TourOption> TourOptions { get; set; }
 
     public virtual DbSet<TourOptionAvailable> TourOptionAvailables { get; set; }
@@ -152,7 +152,7 @@ public partial class TourBookingSystemContext : DbContext
                 .HasColumnType("datetime");
             entity.Property(e => e.Destination).HasMaxLength(100);
             entity.Property(e => e.Price).HasColumnType("decimal(10, 2)");
-            entity.Property(e => e.Status).HasMaxLength(20);
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
             entity.Property(e => e.Thumbnail).HasMaxLength(255);
             entity.Property(e => e.TourName).HasMaxLength(150);
             entity.Property(e => e.Transport).HasMaxLength(100);
@@ -317,6 +317,7 @@ public partial class TourBookingSystemContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.VoucherName).HasMaxLength(100);
         });
+        modelBuilder.Entity<TourSchedule>().ToTable("TourSchedule");
 
         OnModelCreatingPartial(modelBuilder);
     }
