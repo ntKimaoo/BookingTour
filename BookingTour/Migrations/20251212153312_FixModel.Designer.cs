@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookingTour.Migrations
 {
     [DbContext(typeof(TourBookingSystemContext))]
-    [Migration("20250918191324_MTourClass")]
-    partial class MTourClass
+    [Migration("20251212153312_FixModel")]
+    partial class FixModel
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
